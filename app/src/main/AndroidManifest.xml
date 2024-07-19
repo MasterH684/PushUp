@@ -8,7 +8,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".WeekOverviewActivity" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -18,16 +18,19 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".com.example.pushuplogger.NotificationReceiver" android:exported="false" />
+        <activity
+            android:name=".WeekOverviewActivity"
+            android:exported="true" />
 
-        <receiver android:name=".com.example.pushuplogger.PushupWidgetProvider" android:exported="true">
+        <receiver
+            android:name=".PushupWidgetProvider"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_info" />
+                android:resource="@xml/pushup_widget_info" />
         </receiver>
-
     </application>
 </manifest>
