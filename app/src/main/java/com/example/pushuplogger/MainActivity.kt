@@ -14,6 +14,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.SimpleDateFormat
 import java.util.*
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 
 class MainActivity : AppCompatActivity() {
 
@@ -96,12 +98,20 @@ class MainActivity : AppCompatActivity() {
             updateTotalPushups()
             pushupAdapter.notifyDataSetChanged()
             savePushupLogs()
+            updateWidget()
 
             editTextPushups.text.clear()
             updateDate()
         }
     }
 
+    private fun updateWidget() {
+        val intent = Intent(this, PushupWidgetProvider::class.java)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        val ids = AppWidgetManager.getInstance(this).getAppWidgetIds(ComponentName(this, PushupWidgetProvider::class.java))
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        sendBroadcast(intent)
+    }
     private fun updatePushupLog(updatedLog: PushupLog) {
         val index = pushupList.indexOfFirst { it.date == updatedLog.date }
         if (index != -1) {

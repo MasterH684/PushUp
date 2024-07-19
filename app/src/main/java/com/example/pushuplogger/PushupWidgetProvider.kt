@@ -41,8 +41,8 @@ class PushupWidgetProvider : AppWidgetProvider() {
             val (last7DaysPushups, prev7DaysPushups) = calculatePushups(pushupList)
 
             // Update the widget text
-            views.setTextViewText(R.id.textViewLast7DaysPushups, "Last 8 days: $last7DaysPushups")
-            views.setTextViewText(R.id.textViewPrev7DaysPushups, "Prev 8 days: $prev7DaysPushups")
+            views.setTextViewText(R.id.textViewLast7DaysPushups, "Last 7 days: $last7DaysPushups")
+            views.setTextViewText(R.id.textViewPrev7DaysPushups, "Prev 7 days: $prev7DaysPushups")
 
             // Set up a pending intent to launch the app when the widget is clicked
             val intent = Intent(context, MainActivity::class.java)

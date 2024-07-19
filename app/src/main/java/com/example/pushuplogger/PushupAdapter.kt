@@ -1,62 +1,75 @@
 package com.example.pushuplogger
 
-import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 
-class PushupAdapter(private val context: Context, private var pushupList: MutableList<PushupLog>, private val onUpdate: (PushupLog) -> Unit) : RecyclerView.Adapter<PushupAdapter.PushupViewHolder>() {
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 
-    class PushupViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textViewPushupCount: TextView = itemView.findViewById(R.id.textViewPushupCount)
-        val textViewDate: TextView = itemView.findViewById(R.id.textViewDate)
-        val buttonEdit: Button = itemView.findViewById(R.id.buttonEdit)
-    }
+
+class PushupAdapter(
+    private val context: Context,
+    private val pushupList: MutableList<PushupLog>,
+    private val updatePushupLog: (PushupLog) -> Unit
+) : RecyclerView.Adapter<PushupAdapter.PushupViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PushupViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_pushup_log, parent, false)
-        return PushupViewHolder(itemView)
+        val view = LayoutInflater.from(context).inflate(R.layout.item_pushup_log, parent, false)
+        return PushupViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: PushupViewHolder, position: Int) {
-        val currentItem = pushupList[position]
-        holder.textViewPushupCount.text = "${currentItem.count}"
-        holder.textViewDate.text = currentItem.date
+        val pushupLog = pushupList[position]
+        holder.bind(pushupLog)
 
-        holder.buttonEdit.setOnClickListener {
-            showEditDialog(currentItem, position)
+        holder.buttonDelete.setOnClickListener {
+            removePushupLog(position)
         }
     }
 
-    private fun showEditDialog(pushupLog: PushupLog, position: Int) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle("Bewerk Push-ups")
-
-        val view = LayoutInflater.from(context).inflate(R.layout.dialog_edit_pushup, null)
-        val editTextPushups = view.findViewById<EditText>(R.id.editTextDialogPushups)
-        editTextPushups.setText(pushupLog.count.toString())
-
-        builder.setView(view)
-
-        builder.setPositiveButton("Opslaan") { _, _ ->
-            val newCount = editTextPushups.text.toString().toIntOrNull()
-            if (newCount != null) {
-                val updatedLog = pushupLog.copy(count = newCount)
-                pushupList[position] = updatedLog
-                onUpdate(updatedLog)
-                notifyDataSetChanged()
-            }
-        }
-
-        builder.setNegativeButton("Annuleren", null)
-
-        builder.create().show()
+    override fun getItemCount(): Int {
+        return pushupList.size
     }
 
-    override fun getItemCount() = pushupList.size
+    private fun removePushupLog(position: Int) {
+        pushupList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, pushupList.size)
+        savePushupLogs()
+    }
+
+    private fun savePushupLogs() {
+        val sharedPreferences = context.getSharedPreferences("pushupPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val gson = Gson()
+        val json = gson.toJson(pushupList)
+        editor.putString("pushupLogs", json)
+        editor.apply()
+    }
+
+    private fun updateWidget() {
+        val intent = Intent(context, PushupWidgetProvider::class.java)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        val ids = AppWidgetManager.getInstance(context).getAppWidgetIds(ComponentName(context, PushupWidgetProvider::class.java))
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+        context.sendBroadcast(intent)
+    }
+
+    inner class PushupViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val textViewPushupCount: TextView = itemView.findViewById(R.id.textViewPushupCount)
+        private val textViewPushupDate: TextView = itemView.findViewById(R.id.textViewPushupDate)
+        val buttonDelete: Button = itemView.findViewById(R.id.buttonDeletePushup)
+
+        fun bind(pushupLog: PushupLog) {
+            textViewPushupCount.text = pushupLog.count.toString()
+            textViewPushupDate.text = pushupLog.date
+        }
+    }
 }
