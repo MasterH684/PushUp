@@ -8,7 +8,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".WeekOverviewActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -18,9 +18,9 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".NotificationReceiver" android:exported="false" />
+        <receiver android:name=".com.example.pushuplogger.NotificationReceiver" android:exported="false" />
 
-        <receiver android:name=".PushupWidgetProvider" android:exported="true">
+        <receiver android:name=".com.example.pushuplogger.PushupWidgetProvider" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

@@ -1,19 +1,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@drawable/ic_launcher_background">
 
     <TextView
-        android:id="@+id/widgetTextViewTotalPushups"
+        android:id="@+id/textViewLast7DaysPushups"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pushups: 0"
-        android:textSize="18sp" />
+        android:text="Last 7 days: 0"
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
 
-    <Button
-        android:id="@+id/widgetButtonAddPushups"
+    <TextView
+        android:id="@+id/textViewPrev7DaysPushups"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Pushups" />
+        android:text="Prev 7 days: 0"
+        android:textSize="16sp"
+        android:textColor="@android:color/black" />
 </LinearLayout>
